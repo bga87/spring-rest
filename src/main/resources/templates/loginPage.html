@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <link href="/bootstrap-4.5.3/css/bootstrap.min.css" rel="stylesheet">
+        <title>Login page</title>
+    </head>
+    <body class="py-5">
+        <div class="container">
+            <div th:if="${param.error}" class="w-25 alert alert-danger rounded mx-auto text-center">
+                Invalid username or password
+            </div>
+            <div th:if="${param.logout}" class="w-25 alert alert-success rounded mx-auto text-center">
+                You have been logged out
+            </div>
+            <form class="w-25 mx-auto mt-2 text-center" method="post">
+                <h2>Please sign in</h2>
+                <label for="username" class="sr-only">Username</label>
+                <input type="text" id="username" name="username" class="form-control my-1" placeholder="Email address" required autofocus>
+                <label for="password" class="sr-only">Password</label>
+                <input type="password" id="password" name="password" class="form-control my-1" placeholder="Password" required>
+                <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+            </form>
+        </div>
+    </body>
+</html>

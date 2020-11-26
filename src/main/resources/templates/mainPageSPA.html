@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="/bootstrap-4.5.3/css/bootstrap.min.css"> <!-- Подключаем bootstrap -->
+    <style>
+        html, body {
+            height: 100%;
+        }
+    </style>
+    <title sec:authorize="hasRole('ROLE_ADMIN')">Admin panel</title>
+    <title sec:authorize="!hasRole('ROLE_ADMIN')">User page</title>
+</head>
+<body>
+<div class="container-fluid h-100 d-flex flex-column">
+    <div class="row pt-2 bg-dark">
+        <div class="col">
+            <h5 class="text-white"><span class="font-weight-bold" sec:authentication="name">admin@mail.ru</span> with roles:<span th:each="role : ${#authentication.principal.authorities}" th:text="${' ' + role}">ROLE1 ROLE2 ...</span></h5>
+        </div>
+        <div class="col-auto">
+            <a class="text-white-50" style="font-size: 1.15rem" th:href="@{/logout}">Logout</a>
+        </div>
+    </div>
+    <div class="row flex-grow-1">
+        <div class="col-2 px-0 pt-3">
+            <div class="nav flex-column nav-pills" id="v-pills-tabs" role="tablist" aria-orientation="vertical">
+                <a sec:authorize="hasRole('ROLE_ADMIN')" class="nav-link active" id="v-pills-admin-tab" data-toggle="pill" href="#v-pills-admin" role="tab" aria-controls="v-pills-admin" aria-selected="true">Admin</a>
+                <a class="nav-link" th:classappend="${#authorization.expression('!hasRole(''ROLE_ADMIN'')')} ? 'active'" id="v-pills-user-tab" data-toggle="pill" href="#v-pills-user" role="tab" aria-controls="v-pills-user" th:attrappend="aria-selected=${#authorization.expression('hasRole(''ROLE_ADMIN'')')} ? 'false' : 'true'">User</a>
+            </div>
+        </div>
+        <div class="col p-4 bg-light">
+            <div class="tab-content" id="v-pills-tabContent">
+                <div sec:authorize="hasRole('ROLE_ADMIN')" class="tab-pane fade show active" id="v-pills-admin" role="tabpanel" aria-labelledby="v-pills-admin-tab">
+                    <h1>Admin panel</h1>
+                    <nav>
+                        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                            <a class="nav-link active" id="nav-userstable-tab"  href="#nav-userstable" role="tab" aria-controls="nav-userstable" aria-selected="true">Users table</a>
+                            <a class="nav-link" id="nav-newuser-tab"  href="#nav-newuser" role="tab" aria-controls="nav-newuser" aria-selected="false">New User</a>
+                        </div>
+                    </nav>
+                    <div class="tab-content border border-top-0 rounded-bottom" id="nav-tabContent">
+                        <div class="tab-pane fade show active" id="nav-userstable" role="tabpanel" aria-labelledby="nav-userstable-tab">
+                            <div class="border-bottom pl-4 py-2 bg-light">
+                                <span class="h4">All users</span>
+                            </div>
+                            <div class="p-4 bg-white">
+                                <table class="table table-striped table-hover">
+                                    <thead>
+                                    <tr>
+                                        <th scope="col">ID</th>
+                                        <th scope="col">First Name</th>
+                                        <th scope="col">Surname</th>
+                                        <th scope="col">Age</th>
+                                        <th scope="col">Job</th>
+                                        <th scope="col">Income</th>
+                                        <th scope="col">Email</th>
+                                        <th scope="col">Roles</th>
+                                        <th scope="col" class="text-center border-left">Actions</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody id="users-table">
+                                        <!-- Таблица генерируется скриптом script.js -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="nav-newuser" role="tabpanel" aria-labelledby="nav-newuser-tab">
+                            <div class="border-bottom pl-4 py-2 bg-light">
+                                <span class="h4">Add new users</span>
+                            </div>
+                            <div class="bg-white py-4 d-flex justify-content-center">
+                                <form style="width: 30%" id="new-user-form" class="text-center" novalidate>
+                                    <div class="form-group">
+                                        <label class="h5 font-weight-bold" for="name">First name<span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="name" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="h5 font-weight-bold" for="surname">Surname<span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="surname" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="h5 font-weight-bold" for="age">Age<span class="text-danger">*</span></label>
+                                        <input type="number" class="form-control" id="age" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="h5 font-weight-bold" for="job.name">Job</label>
+                                        <input type="text" class="form-control" id="job.name">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="h5 font-weight-bold" for="job.salary">Salary</label>
+                                        <input type="number" class="form-control" id="job.salary">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="h5 font-weight-bold" for="email">Email<span class="text-danger">*</span></label>
+                                        <input type="email" class="form-control" id="email" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="h5 font-weight-bold" for="password">Password<span class="text-danger">*</span></label>
+                                        <input type="password" class="form-control" id="password" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="h5 font-weight-bold" for="roles">Roles</label>
+                                        <select class="form-control" id="roles" multiple>
+                                        </select>
+                                    </div>
+                                    <button type="button" id="new-user-submit" class="btn btn-success mt-3"><span class="h4">Add new user</span></button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" th:classappend="${#authorization.expression('!hasRole(''ROLE_ADMIN'')')} ? 'show active'" id="v-pills-user" role="tabpanel" aria-labelledby="v-pills-user-tab">
+                    <h1>User information-page</h1>
+                    <div class="border rounded bg-white">
+                        <div class="border-bottom bg-light pl-4 py-2">
+                            <span class="h4">About user</span>
+                        </div>
+                        <div class="p-4">
+                            <table class="table table-striped">
+                                <thead>
+                                <tr>
+                                    <th scope="col">ID</th>
+                                    <th scope="col">First Name</th>
+                                    <th scope="col">Surname</th>
+                                    <th scope="col">Age</th>
+                                    <th scope="col">Job</th>
+                                    <th scope="col">Income</th>
+                                    <th scope="col">Email</th>
+                                    <th scope="col">Roles</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:object="${#authentication.principal}">
+                                    <th scope="row" class="align-middle" th:text="*{id}">id</td>
+                                    <td class="align-middle" th:text="*{name}">user</td>
+                                    <td class="align-middle" th:text="*{surname}">user</td>
+                                    <td class="align-middle" th:text="*{age}">30</td>
+                                    <td class="align-middle" th:text="*{job.isPresent() ? job.get().name : 'N/a'}">job</td>
+                                    <td class="align-middle" th:text="*{job.isPresent() ? job.get().salary : 'N/a'}">0</td>
+                                    <td class="align-middle" th:text="*{email}">name@domain</td>
+                                    <td class="align-middle">
+                                        <div class="d-flex flex-column">
+                                            <span th:each="role : *{roles}" th:text="${role}">ROLE</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Модальные окна -->
+<!-- Удаление пользователя -->
+<!--<div sec:authorize="hasRole('ROLE_ADMIN')" class="modal fade" id="deleteUserModal" tabindex="-1" aria-labelledby="deleteUserModalLabel" aria-hidden="true">-->
+<!--    <div class="modal-dialog modal-dialog-centered">-->
+<!--        <div class="modal-content">-->
+<!--            <div class="modal-header">-->
+<!--                <h5 class="modal-title" id="deleteUserModalLabel">Please confirm deletion of user with:</h5>-->
+<!--                <button type="button" class="close" data-dismiss="modal" aria-label="Close">-->
+<!--                    <span aria-hidden="true">&times;</span>-->
+<!--                </button>-->
+<!--            </div>-->
+<!--            <div class="modal-body d-flex justify-content-center">-->
+<!--                <form style="width: 65%;" class="text-center">-->
+<!--                    <fieldset disabled>-->
+<!--                        <div class="form-group">-->
+<!--                            <label class="h5 font-weight-bold" for="id">ID</label>-->
+<!--                            <input type="text" class="form-control text-center" id="id">-->
+<!--                        </div>-->
+<!--                        <div class="form-group">-->
+<!--                            <label class="h5 font-weight-bold" for="name">First name</label>-->
+<!--                            <input type="text" class="form-control text-center" id="name">-->
+<!--                        </div>-->
+<!--                        <div class="form-group">-->
+<!--                            <label class="h5 font-weight-bold" for="surname">Surname</span></label>-->
+<!--                            <input type="text" class="form-control text-center" id="surname">-->
+<!--                        </div>-->
+<!--                        <div class="form-group">-->
+<!--                            <label class="h5 font-weight-bold" for="age">Age</label>-->
+<!--                            <input type="number" class="form-control text-center" id="age">-->
+<!--                        </div>-->
+<!--                        <div class="form-group">-->
+<!--                            <label class="h5 font-weight-bold" for="job">Job</label>-->
+<!--                            <input type="text" class="form-control text-center" id="job">-->
+<!--                        </div>-->
+<!--                        <div class="form-group">-->
+<!--                            <label class="h5 font-weight-bold" for="salary">Salary</label>-->
+<!--                            <input type="text" class="form-control text-center" id="salary">-->
+<!--                        </div>-->
+<!--                        <div class="form-group">-->
+<!--                            <label class="h5 font-weight-bold" for="email">Email</label>-->
+<!--                            <input type="email" class="form-control text-center" id="email">-->
+<!--                        </div>-->
+<!--                        <div class="form-group">-->
+<!--                            <label class="h5 font-weight-bold" for="roles">Roles</label>-->
+<!--                            <select class="form-control text-center" id="roles" multiple size="2">-->
+<!--                                <option>ADMIN</option>-->
+<!--                                <option>USER</option>-->
+<!--                            </select>-->
+<!--                        </div>-->
+<!--                    </fieldset>-->
+<!--                </form>-->
+<!--            </div>-->
+<!--            <div class="modal-footer justify-content-center">-->
+<!--                <form th:method="DELETE">-->
+<!--                    <button type="submit" class="btn btn-danger">Confirm</button>-->
+<!--                </form>-->
+<!--                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
+<!--&lt;!&ndash; Редактирование пользователя &ndash;&gt;-->
+<!--<div sec:authorize="hasRole('ROLE_ADMIN')" class="modal fade" id="editUserModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">-->
+<!--    <div class="modal-dialog modal-dialog-centered">-->
+<!--        <div class="modal-content">-->
+<!--            <div class="modal-header">-->
+<!--                <h5 class="modal-title" id="editUserModalLabel">Please edit user data and confirm to apply changes</h5>-->
+<!--                <button type="button" class="close" data-dismiss="modal" aria-label="Close">-->
+<!--                    <span aria-hidden="true">&times;</span>-->
+<!--                </button>-->
+<!--            </div>-->
+<!--            <div class="modal-body d-flex justify-content-center">-->
+<!--                <form style="width: 65%;" class="text-center" th:method="PATCH">-->
+<!--                    <div class="form-group">-->
+<!--                        <label class="h5 font-weight-bold" for="id">ID</label>-->
+<!--                        <input type="text" class="form-control text-center" id="id" name="id" disabled>-->
+<!--                    </div>-->
+<!--                    <div class="form-group">-->
+<!--                        <label class="h5 font-weight-bold" for="name">First name</label>-->
+<!--                        <input type="text" class="form-control text-center" id="name" name="name">-->
+<!--                    </div>-->
+<!--                    <div class="form-group">-->
+<!--                        <label class="h5 font-weight-bold" for="surname">Surname</label>-->
+<!--                        <input type="text" class="form-control text-center" id="surname" name="surname">-->
+<!--                    </div>-->
+<!--                    <div class="form-group">-->
+<!--                        <label class="h5 font-weight-bold" for="age">Age</label>-->
+<!--                        <input type="number" class="form-control text-center" id="age" name="age">-->
+<!--                    </div>-->
+<!--                    <div class="form-group">-->
+<!--                        <label class="h5 font-weight-bold" for="job.name">Job</label>-->
+<!--                        <input type="text" class="form-control text-center" id="job.name" name="job.name">-->
+<!--                    </div>-->
+<!--                    <div class="form-group">-->
+<!--                        <label class="h5 font-weight-bold" for="job.salary">Salary</label>-->
+<!--                        <input type="text" class="form-control text-center" id="job.salary" name="job.salary">-->
+<!--                    </div>-->
+<!--                    <div class="form-group">-->
+<!--                        <label class="h5 font-weight-bold" for="email">Email</label>-->
+<!--                        <input type="email" class="form-control text-center" id="email" name="email">-->
+<!--                    </div>-->
+<!--                    <div class="form-group">-->
+<!--                        <label class="h5 font-weight-bold" for="password">Password</label>-->
+<!--                        <input type="password" class="form-control text-center" id="password" name="password">-->
+<!--                    </div>-->
+<!--                    <div class="form-group">-->
+<!--                        <label class="h5 font-weight-bold" for="roles">Roles</label>-->
+<!--                        <select class="form-control text-center" id="roles" name="roles" multiple size="2">-->
+<!--                            <option th:each="role : ${application.availableRoles}"-->
+<!--                                    th:value="${role.roleName}"-->
+<!--                                    th:text="${role}">ROLE</option>-->
+<!--                        </select>-->
+<!--                    </div>-->
+<!--                </form>-->
+<!--            </div>-->
+<!--            <div class="modal-footer justify-content-center">-->
+<!--                <button id="editConfirmBtn" type="button" class="btn btn-danger">Confirm</button>-->
+<!--                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
+<!--&lt;!&ndash; Окно редактирования в случае некорректно введенных данных &ndash;&gt;-->
+<!--<div th:if="${(updatedUser != null) and #fields.hasErrors('${updatedUser.*}')}" class="modal fade" id="onErrorEditUserModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="onErrorEditUserModalLabel" aria-hidden="false">-->
+<!--    <div class="modal-dialog modal-dialog-centered">-->
+<!--        <div class="modal-content">-->
+<!--            <div class="modal-header">-->
+<!--                <h5 class="modal-title" id="onErrorEditUserModalLabel">Please edit user data and confirm to apply changes</h5>-->
+<!--                <button type="button" class="close" data-dismiss="modal" aria-label="Close">-->
+<!--                    <span aria-hidden="true">&times;</span>-->
+<!--                </button>-->
+<!--            </div>-->
+<!--            <div class="modal-body d-flex justify-content-center">-->
+<!--                <form style="width: 65%;" class="text-center" th:method="PATCH" th:action="@{/admin/{id}(id=${userId})}" th:object="${updatedUser}">-->
+<!--                    <div class="form-group">-->
+<!--                        <label class="h5 font-weight-bold" for="id">ID</label>-->
+<!--                        <input type="text" class="form-control text-center" th:value="${userId}" disabled>-->
+<!--                    </div>-->
+<!--                    <div class="form-group">-->
+<!--                        <label class="h5 font-weight-bold" for="name">First name</label>-->
+<!--                        <input type="text" class="form-control text-center" th:errorclass="is-invalid" th:field="*{name}">-->
+<!--                        <div class="invalid-feedback" th:errors="*{name}">-->
+<!--                            Name error msg.-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                    <div class="form-group">-->
+<!--                        <label class="h5 font-weight-bold" for="surname">Surname</label>-->
+<!--                        <input type="text" class="form-control text-center" th:errorclass="is-invalid" th:field="*{surname}">-->
+<!--                        <div class="invalid-feedback" th:errors="*{surname}">-->
+<!--                            Surname error msg.-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                    <div class="form-group">-->
+<!--                        <label class="h5 font-weight-bold" for="age">Age</label>-->
+<!--                        <input type="number" class="form-control text-center" th:errorclass="is-invalid" th:field="*{age}">-->
+<!--                        <div class="invalid-feedback" th:errors="*{age}">-->
+<!--                            Age error msg.-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                    <div class="form-group">-->
+<!--                        <label class="h5 font-weight-bold" for="job.name">Job</label>-->
+<!--                        <input type="text" class="form-control text-center" th:field="*{job.name}">-->
+<!--                    </div>-->
+<!--                    <div class="form-group">-->
+<!--                        <label class="h5 font-weight-bold" for="job.salary">Salary</label>-->
+<!--                        <input type="text" class="form-control text-center" th:classappend="${#fields.hasErrors('job.salaryValid')} ? 'is-invalid'" th:field="*{job.salary}">-->
+<!--                        <div class="invalid-feedback" th:errors="*{job.salaryValid}">-->
+<!--                            Salary error msg.-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                    <div class="form-group">-->
+<!--                        <label class="h5 font-weight-bold" for="email">Email</label>-->
+<!--                        <input type="email" class="form-control text-center" th:errorclass="is-invalid" th:field="*{email}">-->
+<!--                        <div class="invalid-feedback" th:errors="*{email}">-->
+<!--                            Email error msg.-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                    <div class="form-group">-->
+<!--                        <label class="h5 font-weight-bold" for="password">Password</label>-->
+<!--                        <input type="password" class="form-control text-center" th:errorclass="is-invalid" th:field="*{password}">-->
+<!--                        <div class="invalid-feedback" th:errors="*{password}">-->
+<!--                            Password error msg.-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                    <div class="form-group">-->
+<!--                        <label class="h5 font-weight-bold" for="roles">Roles</label>-->
+<!--                        <select class="form-control text-center" th:errorclass="is-invalid" th:field="*{roles}" multiple th:size="${application.availableRoles.size()}">-->
+<!--                            <option th:each="role : ${application.availableRoles}"-->
+<!--                                    th:value="${role.roleName}"-->
+<!--                                    th:text="${role}">ROLE</option>-->
+<!--                        </select>-->
+<!--                        <div class="invalid-feedback" th:each="err : ${#fields.errors('roles')}" th:text="${err.substring(err.lastIndexOf(': ') + 2)}">-->
+<!--                            Roles error msg.-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </form>-->
+<!--            </div>-->
+<!--            <div class="modal-footer justify-content-center">-->
+<!--                <button id="onErrorEditConfirmBtn" type="button" class="btn btn-danger">Confirm</button>-->
+<!--                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
+<!-- Подключаем bootstrap -->
+<script src="/jquery/jquery-3.5.1.min.js"></script>
+<script src="/bootstrap-4.5.3/js/bootstrap.min.js"></script>
+<!-- Скрипт с реализацией ajax функционала -->
+<script src="/js/script.js"></script>
+<!--<script sec:authorize="hasRole('ROLE_ADMIN')">-->
+<!--    $('#deleteUserModal').on('show.bs.modal', function (event) {-->
+<!--        var button = $(event.relatedTarget) // Button that triggered the modal-->
+<!--        var userId = button.data('userid') // Extract info from data-* attributes-->
+<!--        // Update the modal's content with jQuery-->
+<!--        var modal = $(this)-->
+<!--        modal.find('#id').val(userId)-->
+<!--        modal.find('#name').val($('#name-' + userId).text())-->
+<!--        modal.find('#surname').val($('#surname-' + userId).text())-->
+<!--        modal.find('#age').val($('#age-' + userId).text())-->
+<!--        modal.find('#job').val($('#job-' + userId).text())-->
+<!--        modal.find('#salary').val($('#salary-' + userId).text())-->
+<!--        modal.find('#email').val($('#email-' + userId).text())-->
+<!--        modal.find('#roles').children().each(function() {-->
+<!--            var availableRole = $(this);-->
+<!--            $('#roles-' + userId + ' div').children('span').each(function() {-->
+<!--                if ($(this).text().toLowerCase() === availableRole.text().toLowerCase()) {-->
+<!--                    availableRole.attr('selected', '')-->
+<!--                    return false-->
+<!--                }-->
+<!--            })-->
+<!--        })-->
+<!--        modal.find('.modal-footer form').attr('action', '/admin/' + userId)-->
+<!--    });-->
+<!--    $('#deleteUserModal').on('hide.bs.modal', function () {-->
+<!--        var modal = $(this)-->
+<!--        modal.find('#roles').children().removeAttr('selected')-->
+<!--    });-->
+<!--    $('#editUserModal').on('show.bs.modal', function (event) {-->
+<!--        var button = $(event.relatedTarget) // Button that triggered the modal-->
+<!--        var userId = button.data('userid') // Extract info from data-* attributes-->
+<!--        // Update the modal's content with jQuery-->
+<!--        var modal = $(this)-->
+<!--        modal.find('#id').val(userId)-->
+<!--        modal.find('#name').val($('#name-' + userId).text())-->
+<!--        modal.find('#surname').val($('#surname-' + userId).text())-->
+<!--        modal.find('#age').val($('#age-' + userId).text())-->
+<!--        var jobVal = $('#job-' + userId).text()-->
+<!--        modal.find('#job\\.name').val(jobVal === 'N/a' ? '' : jobVal)-->
+<!--        modal.find('#job\\.salary').val(jobVal === "N/a" ? '' : $('#salary-' + userId).text())-->
+<!--        modal.find('#email').val($('#email-' + userId).text())-->
+<!--        modal.find('#roles').children().each(function() {-->
+<!--            var availableRole = $(this);-->
+<!--            $('#roles-' + userId + ' div').children('span').each(function() {-->
+<!--                if ($(this).text().toLowerCase() === availableRole.text().toLowerCase()) {-->
+<!--                    availableRole.attr('selected', '')-->
+<!--                    return false-->
+<!--                }-->
+<!--            })-->
+<!--        })-->
+<!--        modal.find('.modal-body form').attr('action', '/admin/' + userId)-->
+<!--    });-->
+<!--    $('#editUserModal').on('hide.bs.modal', function () {-->
+<!--        var modal = $(this)-->
+<!--        modal.find('#roles').children().removeAttr('selected')-->
+<!--    });-->
+<!--    $('#editConfirmBtn').click(function() {-->
+<!--        $('#editUserModal form').submit()-->
+<!--    });-->
+<!--</script>-->
+<!--<script th:if="${(updatedUser != null) and #fields.hasErrors('${updatedUser.*}')}">-->
+<!--    $(document).ready(function () {-->
+<!--        $('#onErrorEditUserModal').modal('show')-->
+<!--    });-->
+<!--    $('#onErrorEditConfirmBtn').click(function() {-->
+<!--        $('#onErrorEditUserModal form').submit()-->
+<!--    });-->
+<!--</script>-->
+</body>
+</html>
