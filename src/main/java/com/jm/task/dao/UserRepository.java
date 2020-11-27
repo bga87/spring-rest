@@ -29,10 +29,10 @@ public interface UserRepository extends Repository<User, Long> {
     @EntityGraph(attributePaths = {"job", "roles"})
     Optional<User> findWithFetchedJobAndRolesByEmail(String email);
 
-    @EntityGraph(attributePaths = "job")
-    Optional<User> findWithFetchedJobById(Long id);
+    @EntityGraph(attributePaths = {"job", "roles"})
+    Optional<User> findWithFetchedJobAndRolesById(Long id);
 
     @EntityGraph(attributePaths = "job")
-    Optional<User> findById(Long id);
+    Optional<User> findWithFetchedJobById(Long id);
 
 }

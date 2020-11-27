@@ -4,6 +4,7 @@ package com.jm.task.config.security;
 import com.jm.task.config.security.handlers.LoginSuccessHandler;
 import com.jm.task.services.UsersService;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -31,7 +32,7 @@ public class WebRequestSecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests()
                 .regexMatchers("\\/", "\\/\\?.*", "\\/bootstrap.*", "\\/jquery.*", "\\/js.*", "\\/favicon.*").permitAll()
                 .antMatchers("/user/**").access("hasAuthority('ROLE_USER') and !hasAuthority('ROLE_ADMIN')")
-                .regexMatchers("/admin/1002/*").denyAll()
+                .regexMatchers(HttpMethod.DELETE, "\\/admin\\/users\\/1002\\/*").denyAll()
                 .antMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
                 .antMatchers("/**").denyAll()
                 .and()

@@ -155,65 +155,64 @@
 </div>
 <!-- Модальные окна -->
 <!-- Удаление пользователя -->
-<!--<div sec:authorize="hasRole('ROLE_ADMIN')" class="modal fade" id="deleteUserModal" tabindex="-1" aria-labelledby="deleteUserModalLabel" aria-hidden="true">-->
-<!--    <div class="modal-dialog modal-dialog-centered">-->
-<!--        <div class="modal-content">-->
-<!--            <div class="modal-header">-->
-<!--                <h5 class="modal-title" id="deleteUserModalLabel">Please confirm deletion of user with:</h5>-->
-<!--                <button type="button" class="close" data-dismiss="modal" aria-label="Close">-->
-<!--                    <span aria-hidden="true">&times;</span>-->
-<!--                </button>-->
-<!--            </div>-->
-<!--            <div class="modal-body d-flex justify-content-center">-->
-<!--                <form style="width: 65%;" class="text-center">-->
-<!--                    <fieldset disabled>-->
-<!--                        <div class="form-group">-->
-<!--                            <label class="h5 font-weight-bold" for="id">ID</label>-->
-<!--                            <input type="text" class="form-control text-center" id="id">-->
-<!--                        </div>-->
-<!--                        <div class="form-group">-->
-<!--                            <label class="h5 font-weight-bold" for="name">First name</label>-->
-<!--                            <input type="text" class="form-control text-center" id="name">-->
-<!--                        </div>-->
-<!--                        <div class="form-group">-->
-<!--                            <label class="h5 font-weight-bold" for="surname">Surname</span></label>-->
-<!--                            <input type="text" class="form-control text-center" id="surname">-->
-<!--                        </div>-->
-<!--                        <div class="form-group">-->
-<!--                            <label class="h5 font-weight-bold" for="age">Age</label>-->
-<!--                            <input type="number" class="form-control text-center" id="age">-->
-<!--                        </div>-->
-<!--                        <div class="form-group">-->
-<!--                            <label class="h5 font-weight-bold" for="job">Job</label>-->
-<!--                            <input type="text" class="form-control text-center" id="job">-->
-<!--                        </div>-->
-<!--                        <div class="form-group">-->
-<!--                            <label class="h5 font-weight-bold" for="salary">Salary</label>-->
-<!--                            <input type="text" class="form-control text-center" id="salary">-->
-<!--                        </div>-->
-<!--                        <div class="form-group">-->
-<!--                            <label class="h5 font-weight-bold" for="email">Email</label>-->
-<!--                            <input type="email" class="form-control text-center" id="email">-->
-<!--                        </div>-->
-<!--                        <div class="form-group">-->
-<!--                            <label class="h5 font-weight-bold" for="roles">Roles</label>-->
-<!--                            <select class="form-control text-center" id="roles" multiple size="2">-->
-<!--                                <option>ADMIN</option>-->
-<!--                                <option>USER</option>-->
-<!--                            </select>-->
-<!--                        </div>-->
-<!--                    </fieldset>-->
-<!--                </form>-->
-<!--            </div>-->
-<!--            <div class="modal-footer justify-content-center">-->
+<div sec:authorize="hasRole('ROLE_ADMIN')" class="modal fade" id="deleteUserModal" tabindex="-1" aria-labelledby="deleteUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteUserModalLabel">Please confirm deletion of user with:</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body d-flex justify-content-center">
+                <form style="width: 65%;" class="text-center">
+                    <fieldset disabled>
+                        <div class="form-group">
+                            <label class="h5 font-weight-bold" for="id">ID</label>
+                            <input type="text" class="form-control text-center" id="id">
+                        </div>
+                        <div class="form-group">
+                            <label class="h5 font-weight-bold" for="name">First name</label>
+                            <input type="text" class="form-control text-center" id="name">
+                        </div>
+                        <div class="form-group">
+                            <label class="h5 font-weight-bold" for="surname">Surname</span></label>
+                            <input type="text" class="form-control text-center" id="surname">
+                        </div>
+                        <div class="form-group">
+                            <label class="h5 font-weight-bold" for="age">Age</label>
+                            <input type="number" class="form-control text-center" id="age">
+                        </div>
+                        <div class="form-group">
+                            <label class="h5 font-weight-bold" for="job.name">Job</label>
+                            <input type="text" class="form-control text-center" id="job.name">
+                        </div>
+                        <div class="form-group">
+                            <label class="h5 font-weight-bold" for="job.salary">Salary</label>
+                            <input type="text" class="form-control text-center" id="job.salary">
+                        </div>
+                        <div class="form-group">
+                            <label class="h5 font-weight-bold" for="email">Email</label>
+                            <input type="email" class="form-control text-center" id="email">
+                        </div>
+                        <div class="form-group">
+                            <label class="h5 font-weight-bold" for="roles">Roles</label>
+                            <select class="form-control text-center" id="roles" multiple>
+                            </select>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+            <div class="modal-footer justify-content-center">
 <!--                <form th:method="DELETE">-->
 <!--                    <button type="submit" class="btn btn-danger">Confirm</button>-->
 <!--                </form>-->
-<!--                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--</div>-->
+                <button type="button" id="delete-user-submit" class="btn btn-danger">Confirm</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 <!--&lt;!&ndash; Редактирование пользователя &ndash;&gt;-->
 <!--<div sec:authorize="hasRole('ROLE_ADMIN')" class="modal fade" id="editUserModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">-->
 <!--    <div class="modal-dialog modal-dialog-centered">-->
@@ -361,31 +360,9 @@
 <script src="/jquery/jquery-3.5.1.min.js"></script>
 <script src="/bootstrap-4.5.3/js/bootstrap.min.js"></script>
 <!-- Скрипт с реализацией ajax функционала -->
-<script src="/js/script.js"></script>
+<script sec:authorize="hasRole('ROLE_ADMIN')" src="/js/script.js"></script>
 <!--<script sec:authorize="hasRole('ROLE_ADMIN')">-->
-<!--    $('#deleteUserModal').on('show.bs.modal', function (event) {-->
-<!--        var button = $(event.relatedTarget) // Button that triggered the modal-->
-<!--        var userId = button.data('userid') // Extract info from data-* attributes-->
-<!--        // Update the modal's content with jQuery-->
-<!--        var modal = $(this)-->
-<!--        modal.find('#id').val(userId)-->
-<!--        modal.find('#name').val($('#name-' + userId).text())-->
-<!--        modal.find('#surname').val($('#surname-' + userId).text())-->
-<!--        modal.find('#age').val($('#age-' + userId).text())-->
-<!--        modal.find('#job').val($('#job-' + userId).text())-->
-<!--        modal.find('#salary').val($('#salary-' + userId).text())-->
-<!--        modal.find('#email').val($('#email-' + userId).text())-->
-<!--        modal.find('#roles').children().each(function() {-->
-<!--            var availableRole = $(this);-->
-<!--            $('#roles-' + userId + ' div').children('span').each(function() {-->
-<!--                if ($(this).text().toLowerCase() === availableRole.text().toLowerCase()) {-->
-<!--                    availableRole.attr('selected', '')-->
-<!--                    return false-->
-<!--                }-->
-<!--            })-->
-<!--        })-->
-<!--        modal.find('.modal-footer form').attr('action', '/admin/' + userId)-->
-<!--    });-->
+
 <!--    $('#deleteUserModal').on('hide.bs.modal', function () {-->
 <!--        var modal = $(this)-->
 <!--        modal.find('#roles').children().removeAttr('selected')-->

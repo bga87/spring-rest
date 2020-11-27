@@ -18,17 +18,15 @@ public class UserDaoImpl implements UserDao {
 
     private final UserRepository userRepo;
     private final JobRepository jobRepo;
-//    private final RoleRepository roleRepo;
 
-    public UserDaoImpl(UserRepository userRepo, JobRepository jobRepo/*, RoleRepository roleRepo*/) {
+    public UserDaoImpl(UserRepository userRepo, JobRepository jobRepo) {
         this.userRepo = userRepo;
         this.jobRepo = jobRepo;
-//        this.roleRepo = roleRepo;
     }
 
     @Override
     public User save(User user) throws IllegalStateException {
-        setJobToNullIfJobNameIsEmpty(user);
+//        setJobToNullIfJobNameIsEmpty(user);
         // проверяем, что user'а с такими данными в базе нет
         if (isAlreadyInDatabase(user)) {
             throw new IllegalStateException("User " + user + " has already been saved to database before");
@@ -38,7 +36,6 @@ public class UserDaoImpl implements UserDao {
             throw new IllegalStateException("Email " + user.getEmail() + " belongs to another user; must be unique");
         }
         setJobFromPersistentIfExists(user);
-//        mergeDetachedRoles(user);
         return userRepo.save(user);
     }
 
@@ -57,6 +54,12 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
+    public User getUserById(Long id) {
+        return userRepo.findWithFetchedJobAndRolesById(id)
+                .orElseThrow(() -> new RuntimeException("User with id '" + id + "' not found"));
+    }
+
+    @Override
     public User getUserByLogin(String email) {
         return userRepo.findWithFetchedJobAndRolesByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User with login/email '" + email + "' not found"));
@@ -64,9 +67,9 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public void update(Long idToUpdate, User modifiedUser) throws IllegalStateException {
-        User userToUpdate = userRepo.findById(idToUpdate)
+        User userToUpdate = userRepo.findWithFetchedJobById(idToUpdate)
                 .orElseThrow(() -> new RuntimeException("User with id '" + idToUpdate + "' doesn't exist"));
-        setJobToNullIfJobNameIsEmpty(modifiedUser);
+//        setJobToNullIfJobNameIsEmpty(modifiedUser);
         // Если изменненый user идентичен соответствующему ему из БД,
         // то дальнейшее выполнение метода не имеет смысла
         if (userToUpdate.equals(modifiedUser)) {
@@ -84,7 +87,6 @@ public class UserDaoImpl implements UserDao {
         userToUpdate.setEmail(modifiedUser.getEmail());
         userToUpdate.setPassword(modifiedUser.getPassword());
         userToUpdate.setRoles(modifiedUser.getRoles());
-//        mergeDetachedRoles(userToUpdate);
 
         if (jobsAreDifferent(userToUpdate, modifiedUser)) {
             // данные о работе поменялись
@@ -113,15 +115,6 @@ public class UserDaoImpl implements UserDao {
         return userRepo.findAllByEmail(user.getEmail()).isEmpty();
     }
 
-//    private void mergeDetachedRoles(User user) {
-//        Set<Role> persistentRoles = user.getRoles().stream()
-//                .map(Role::getId)
-//                .map(roleRepo::findById)
-//                .flatMap(Optional::stream)
-//                .collect(Collectors.toSet());
-//        user.setRoles(persistentRoles);
-//    }
-
     private void setJobFromPersistentIfExists(User user) {
         user.getJob().flatMap(userJob ->
                 jobRepo.findByNameAndSalary(userJob.getName(), userJob.getSalary()))
@@ -134,13 +127,13 @@ public class UserDaoImpl implements UserDao {
         }
     }
 
-    private void setJobToNullIfJobNameIsEmpty(User user) {
-        user.getJob().ifPresent(job -> {
-            if (job.getName().isEmpty()) {
-                user.setJob(null);
-            }
-        });
-    }
+//    private void setJobToNullIfJobNameIsEmpty(User user) {
+//        user.getJob().ifPresent(job -> {
+//            if (job.getName().isEmpty()) {
+//                user.setJob(null);
+//            }
+//        });
+//    }
 
     private boolean emailsAreDifferent(User userToUpdate, User modifiedUser) {
         return !userToUpdate.getEmail().equals(modifiedUser.getEmail());

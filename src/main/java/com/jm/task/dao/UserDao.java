@@ -11,6 +11,7 @@ public interface UserDao {
     User save(User user) throws IllegalStateException;
     void delete(long id);
     List<User> listUsers();
+    User getUserById(Long id);
     User getUserByLogin(String email);
     void update(Long idToUpdate, User modifiedUser) throws IllegalStateException;
 

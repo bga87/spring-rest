@@ -40,6 +40,12 @@ public class UsersServiceImpl implements UsersService {
 
     @Transactional
     @Override
+    public User getUser(Long id) {
+        return userDao.getUserById(id);
+    }
+
+    @Transactional
+    @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         return userDao.getUserByLogin(email);
     }

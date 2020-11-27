@@ -1,9 +1,11 @@
 $(document).ready(renderUsersTable);
 
+
 async function renderUsersTable() {
     let usersTableHtml = await getUsersTable();
     $('#users-table').html(usersTableHtml);
 }
+
 
 async function getUsersTable() {
     let response = await fetch('http://localhost:8080/admin/users');
@@ -40,9 +42,57 @@ async function getUsersTable() {
     return usersData;
 }
 
+
 function byId(obj1, obj2) {
     return obj1.id - obj2.id;
 }
+
+
+$('#deleteUserModal').on('show.bs.modal', async function (event) {
+    var button = $(event.relatedTarget) // Button that triggered the modal
+    var userId = button.data('userid') // Extract info from data-* attributes
+    let response = await fetch('http://localhost:8080/admin/users/' + userId);
+
+    if (response.status === 200) {
+        let user = await response.json();
+        // Update the modal's content with jQuery
+        let modal = $(this)
+        modal.find('#id').val(user.id)
+        modal.find('#name').val(user.name)
+        modal.find('#surname').val(user.surname)
+        modal.find('#age').val(user.age)
+        if (user.job != null) {
+            modal.find('#job\\.name').val(user.job.name)
+            modal.find('#job\\.salary').val(user.job.salary)
+        } else {
+            modal.find('#job\\.name').val('N/a')
+            modal.find('#job\\.salary').val('N/a')
+        }
+        modal.find('#email').val(user.email)
+
+        let selectElement = modal.find('#roles');
+        selectElement.attr('size', user.roles.length);
+
+        let options = ``;
+        for (role of user.roles.sort(byId)) {
+            options += `<option value="${role.roleName}">${role.roleName.substr(5)}</option>`;
+        }
+
+        selectElement.html(options);
+
+        modal.find('#delete-user-submit').on('click', async function(event) {
+            event.preventDefault();
+            let response = await fetch('http://localhost:8080/admin/users/' + user.id, {
+                method: 'DELETE'
+            })
+            if (response.status === 204) {
+                $('#deleteUserModal').modal('hide');
+                renderUsersTable();
+            }
+        });
+    }
+});
+
 
 $('#nav-tab a').on('click', function(event) {
     event.preventDefault();
@@ -52,16 +102,17 @@ $('#nav-tab a').on('click', function(event) {
             renderUsersTable();
             break;
         case "nav-newuser-tab":
-            loadAvailableRoles("new-user-form");
+            loadAvailableRoles('#new-user-form select');
             break;
     }
 });
 
-async function loadAvailableRoles(formId) {
+
+async function loadAvailableRoles(selectSelector) {
     let response = await fetch('http://localhost:8080/admin/roles');
     if (response.status === 200) {
         let roles = await response.json();
-        let targetSelectElement = $('#' + formId + ' select');
+        let targetSelectElement = $(selectSelector);
         targetSelectElement.attr('size', roles.length);
 
         let options = ``;
@@ -72,6 +123,7 @@ async function loadAvailableRoles(formId) {
         targetSelectElement.html(options);
     }
 }
+
 
 $('#new-user-submit').on('click', async function(event) {
     event.preventDefault();
@@ -116,21 +168,23 @@ $('#new-user-submit').on('click', async function(event) {
         result = await response.json();
             clearPreviousValidationErrors(form);
         for ([key, value] of Object.entries(result)) {
-            renderValidationErrors(form, key, value);
+            showValidationErrors(form, key, value);
         }
     } else if (response.status === 500) {
         result = await response.text();
         clearPreviousValidationErrors(form);
-        renderServerErrorModal(result);
+        showServerErrorModal(result);
     }
 })
+
 
 function clearPreviousValidationErrors(form) {
     form.find('input, select').removeClass('is-invalid');
     $('.invalid-feedback').remove();
 }
 
-function renderValidationErrors(form, fieldName, errMsg) {
+
+function showValidationErrors(form, fieldName, errMsg) {
     let sel = jqId(fieldName);
     let inputElement = form.find(sel);
 
@@ -142,11 +196,13 @@ function renderValidationErrors(form, fieldName, errMsg) {
     );
 }
 
+
 function jqId(unescapedId) {
     return '#' + unescapedId.replace(/\./g, "\\.");
 }
 
-function renderServerErrorModal(errorMsg) {
+
+function showServerErrorModal(errorMsg) {
     let modalElement =
         `<div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">

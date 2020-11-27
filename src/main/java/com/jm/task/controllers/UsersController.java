@@ -4,11 +4,12 @@ package com.jm.task.controllers;
 import com.jm.task.domain.User;
 import com.jm.task.services.UsersService;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -45,24 +46,17 @@ public class UsersController {
         return usersService.save(user);
     }
 
-//    @PostMapping("/admin")
-//    public String createUser(@ModelAttribute("newUser") @Valid User user, Errors errors,
-//                             SessionStatus sessionStatus) {
-//        if (errors.hasErrors()) {
-//            return "mainPage";
-//        }
-//        usersService.save(user);
-//        sessionStatus.setComplete();
-//        return "redirect:/admin";
-//    }
-//
-//    @DeleteMapping("/admin/{id}")
-//    public String deleteUser(@PathVariable("id") Long id, SessionStatus sessionStatus) {
-//        usersService.delete(id);
-//        sessionStatus.setComplete();
-//        return "redirect:/admin";
-//    }
-//
+    @GetMapping("/admin/users/{id}")
+    public User getUser(@PathVariable("id") Long id) {
+        return usersService.getUser(id);
+    }
+
+    @DeleteMapping("/admin/users/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteUser(@PathVariable("id") Long id) {
+        usersService.delete(id);
+    }
+
 //    @PatchMapping("/admin/{id}")
 //    public String updateUser(@PathVariable("id") Long id, @ModelAttribute("updatedUser") @Valid User user,
 //                             Errors errors, Model model, SessionStatus sessionStatus) {

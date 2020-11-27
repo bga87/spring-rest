@@ -13,5 +13,6 @@ public interface UsersService extends UserDetailsService {
     void delete(Long id);
     List<User> listUsers();
     void update(Long idToUpdate, User modifiedUser) throws IllegalStateException;
+    User getUser(Long id);
 
 }
