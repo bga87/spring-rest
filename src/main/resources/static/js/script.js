@@ -48,7 +48,77 @@ function byId(obj1, obj2) {
 }
 
 
-$('#deleteUserModal').on('show.bs.modal', async function (event) {
+$('#deleteUserModal').on('show.bs.modal', async function(event) {
+    let modal = $(this);
+    if (await loadUserData(modal, event)) {
+        modal.find('#delete-user-submit').on('click', async function(event) {
+            event.preventDefault();
+            let response = await fetch('http://localhost:8080/admin/users/' + user.id, {
+                method: 'DELETE'
+            })
+            modal.modal('hide');
+            if (response.status === 204) {
+                renderUsersTable();
+            } else if (response.status === 403) {
+                showErrorModal('Access denied!');
+            } else {
+                let result = await response.text();
+                showErrorModal(result);
+            }
+        });
+    }
+});
+
+
+$('#deleteUserModal').on('hide.bs.modal', function() {
+    $(this).find('#delete-user-submit').off('click');
+});
+
+
+$('#editUserModal').on('show.bs.modal', async function(event) {
+    let modal = $(this);
+    if (await loadUserData(modal, event)) {
+        modal.find('#edit-user-submit').on('click', async function(event) {
+            event.preventDefault();
+            let editFrom = modal.find('form');
+            let user = getUserFromForm(editFrom);
+            let response = await fetch('http://localhost:8080/admin/users/' + user.id, {
+                method: 'PATCH',
+                headers: {
+                    'Content-type': 'application/json;charset=utf-8'
+                },
+                body: JSON.stringify(user)
+            });
+            if (response.status === 202) {
+                modal.modal('hide');
+                renderUsersTable();
+            } else if (response.status === 400) {
+                let result = await response.json();
+                clearPreviousValidationErrors(editFrom);
+                for ([key, value] of Object.entries(result)) {
+                    showValidationErrors(editFrom, key, value);
+                }
+            } else if (response.status === 403) {
+                showErrorModal('Access denied!');
+            } else if (response.status === 500) {
+                let result = await response.text();
+                clearPreviousValidationErrors(editFrom);
+                showErrorModal(result);
+            }
+        });
+    }
+});
+
+
+$('#editUserModal').on('hide.bs.modal', function() {
+    $(this).find('#edit-user-submit').off('click');
+    let form = $(this).find('form');
+    clearPreviousValidationErrors(form);
+    form.trigger('reset');
+});
+
+
+async function loadUserData(modal, event) {
     var button = $(event.relatedTarget) // Button that triggered the modal
     var userId = button.data('userid') // Extract info from data-* attributes
     let response = await fetch('http://localhost:8080/admin/users/' + userId);
@@ -56,7 +126,6 @@ $('#deleteUserModal').on('show.bs.modal', async function (event) {
     if (response.status === 200) {
         let user = await response.json();
         // Update the modal's content with jQuery
-        let modal = $(this)
         modal.find('#id').val(user.id)
         modal.find('#name').val(user.name)
         modal.find('#surname').val(user.surname)
@@ -72,26 +141,14 @@ $('#deleteUserModal').on('show.bs.modal', async function (event) {
 
         let selectElement = modal.find('#roles');
         selectElement.attr('size', user.roles.length);
+        await loadAvailableRoles(selectElement);
+        markSelectedRoles(selectElement, user.roles);
 
-        let options = ``;
-        for (role of user.roles.sort(byId)) {
-            options += `<option value="${role.roleName}">${role.roleName.substr(5)}</option>`;
-        }
-
-        selectElement.html(options);
-
-        modal.find('#delete-user-submit').on('click', async function(event) {
-            event.preventDefault();
-            let response = await fetch('http://localhost:8080/admin/users/' + user.id, {
-                method: 'DELETE'
-            })
-            if (response.status === 204) {
-                $('#deleteUserModal').modal('hide');
-                renderUsersTable();
-            }
-        });
+        return true;
     }
-});
+
+    return false;
+}
 
 
 $('#nav-tab a').on('click', function(event) {
@@ -125,9 +182,49 @@ async function loadAvailableRoles(selectSelector) {
 }
 
 
+function markSelectedRoles(selectSelector, userRoles) {
+    for (role of userRoles) {
+        let childSet = $(selectSelector).children('option');
+        childSet.each(function () {
+           if ($(this).attr('value') === role.roleName) {
+               $(this).attr('selected', '');
+               return false;
+           }
+        });
+    }
+}
+
+
 $('#new-user-submit').on('click', async function(event) {
     event.preventDefault();
-    let form = $('#new-user-form');
+    let user = getUserFromForm($('#new-user-form'));
+    let response = await fetch('http://localhost:8080/admin/users', {
+        method: 'POST',
+        headers: {
+            'Content-type': 'application/json;charset=utf-8'
+        },
+        body: JSON.stringify(user)
+    });
+
+    let result;
+    if (response.status === 201) {
+        form.trigger('reset');
+        $('#nav-userstable-tab').trigger('click');
+    } else if (response.status === 400) {
+        result = await response.json();
+            clearPreviousValidationErrors(form);
+        for ([key, value] of Object.entries(result)) {
+            showValidationErrors(form, key, value);
+        }
+    } else if (response.status === 500) {
+        result = await response.text();
+        clearPreviousValidationErrors(form);
+        showErrorModal(result);
+    }
+})
+
+
+function getUserFromForm(form) {
     let user = {};
     let job = {};
     let roles = [];
@@ -151,31 +248,8 @@ $('#new-user-submit').on('click', async function(event) {
     });
     user["job"] = job;
     user["roles"] = roles;
-
-    let response = await fetch('http://localhost:8080/admin/users', {
-        method: 'POST',
-        headers: {
-            'Content-type': 'application/json;charset=utf-8'
-        },
-        body: JSON.stringify(user)
-    });
-
-    let result;
-    if (response.status === 201) {
-        form.trigger('reset');
-        $('#nav-userstable-tab').trigger('click');
-    } else if (response.status === 400) {
-        result = await response.json();
-            clearPreviousValidationErrors(form);
-        for ([key, value] of Object.entries(result)) {
-            showValidationErrors(form, key, value);
-        }
-    } else if (response.status === 500) {
-        result = await response.text();
-        clearPreviousValidationErrors(form);
-        showServerErrorModal(result);
-    }
-})
+    return user;
+}
 
 
 function clearPreviousValidationErrors(form) {
@@ -202,7 +276,7 @@ function jqId(unescapedId) {
 }
 
 
-function showServerErrorModal(errorMsg) {
+function showErrorModal(errorMsg) {
     let modalElement =
         `<div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">

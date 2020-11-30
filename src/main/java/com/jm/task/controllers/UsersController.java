@@ -9,6 +9,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -40,9 +41,9 @@ public class UsersController {
         return usersService.listUsers();
     }
 
-    @PostMapping(path = "/admin/users", consumes = "application/json", produces = "application/json")
+    @PostMapping(path = "/admin/users", consumes = "application/json")
     @ResponseStatus(HttpStatus.CREATED)
-    public User postUser(@RequestBody @Valid User user) {
+    public User addUser(@RequestBody @Valid User user) {
         return usersService.save(user);
     }
 
@@ -51,29 +52,22 @@ public class UsersController {
         return usersService.getUser(id);
     }
 
+    @PatchMapping(path = "/admin/users/{id}", consumes = "application/json")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public void updateUser(@PathVariable("id") Long id, @RequestBody @Valid User user) {
+        usersService.update(id, user);
+    }
+
     @DeleteMapping("/admin/users/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteUser(@PathVariable("id") Long id) {
         usersService.delete(id);
     }
 
-//    @PatchMapping("/admin/{id}")
-//    public String updateUser(@PathVariable("id") Long id, @ModelAttribute("updatedUser") @Valid User user,
-//                             Errors errors, Model model, SessionStatus sessionStatus) {
-//        if (errors.hasErrors()) {
-//            model.addAttribute("userId", id);
-//            return "mainPage";
-//        }
-//        usersService.update(id, user);
-//        sessionStatus.setComplete();
-//        return "redirect:/admin";
-//    }
-//
-//    @GetMapping("/user")
-//    public String showUserUI() {
-//        return "mainPage";
-//    }
-//
+    @RequestMapping(path = "/accessDenied")
+    public void accessDenied() {
+    }
+
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public Map<String, String[]> handleValidationException(MethodArgumentNotValidException ex) {
@@ -92,10 +86,5 @@ public class UsersController {
     public String handleGeneralException(Exception ex) {
         return ex.getMessage();
     }
-//
-//    @RequestMapping(path = "/accessDenied")
-//    public String accessDenied() {
-//        return "accessDenied";
-//    }
 
 }

@@ -13,6 +13,7 @@ public class WebConfig implements WebMvcConfigurer {
     public void addViewControllers(ViewControllerRegistry registry) {
         registry.addViewController("/").setViewName("loginPage");
         registry.addViewController("/admin").setViewName("mainPageSPA");
+        registry.addViewController("/user").setViewName("mainPageSPA");
     }
 
 }
