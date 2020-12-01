@@ -40,8 +40,6 @@ public class WebRequestSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .formLogin().loginPage("/").successHandler(new LoginSuccessHandler())
                 .and()
-                .exceptionHandling().accessDeniedPage("/accessDenied")
-                .and()
                 .csrf().disable();
     }
 

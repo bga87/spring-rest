@@ -4,6 +4,8 @@ package com.jm.task.controllers;
 import com.jm.task.dao.RoleRepository;
 import com.jm.task.domain.Role;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,8 +24,8 @@ public class RolesController {
     }
 
     @GetMapping("/admin/roles")
-    public List<Role> getRoles() {
-        return roleRepo.findAll(Sort.by("id"));
+    public ResponseEntity<List<Role>> getRoles() {
+        return new ResponseEntity<>(roleRepo.findAll(Sort.by("id")), HttpStatus.OK);
     }
 
 }

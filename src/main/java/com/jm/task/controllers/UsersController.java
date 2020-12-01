@@ -4,6 +4,7 @@ package com.jm.task.controllers;
 import com.jm.task.domain.User;
 import com.jm.task.services.UsersService;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -15,7 +16,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
@@ -38,45 +38,41 @@ public class UsersController {
     }
 
     @GetMapping("/admin/users")
-    public List<User> getUsers() {
-        return usersService.listUsers();
+    public ResponseEntity<List<User>> getUsers() {
+        return new ResponseEntity<>(usersService.listUsers(), HttpStatus.OK);
     }
 
     @PostMapping(path = "/admin/users", consumes = "application/json")
-    @ResponseStatus(HttpStatus.CREATED)
-    public User addUser(@RequestBody @Valid User user) {
-        return usersService.save(user);
+    public ResponseEntity<User> addUser(@RequestBody @Valid User user) {
+        return new ResponseEntity<>(usersService.save(user), HttpStatus.CREATED);
     }
 
     @GetMapping("/admin/users/{id}")
-    public User getUser(@PathVariable("id") Long id) {
-        return usersService.getUser(id);
+    public ResponseEntity<User> getUser(@PathVariable("id") Long id) {
+        return new ResponseEntity<>(usersService.getUser(id), HttpStatus.OK);
     }
 
     @PatchMapping(path = "/admin/users/{id}", consumes = "application/json")
-    @ResponseStatus(HttpStatus.ACCEPTED)
-    public void updateUser(@PathVariable("id") Long id, @RequestBody @Valid User user) {
+    public ResponseEntity<Void> updateUser(@PathVariable("id") Long id, @RequestBody @Valid User user) {
         usersService.update(id, user);
+        return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 
     @GetMapping("/users/current")
-    public User getCurrentUser(Authentication authentication) {
-        return usersService.getUser(((User) authentication.getPrincipal()).getId());
+    public ResponseEntity<User> getCurrentUser(Authentication authentication) {
+        return new ResponseEntity<>(
+                usersService.getUser(((User) authentication.getPrincipal()).getId()),
+                HttpStatus.OK);
     }
 
     @DeleteMapping("/admin/users/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteUser(@PathVariable("id") Long id) {
+    public ResponseEntity<Void> deleteUser(@PathVariable("id") Long id) {
         usersService.delete(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @RequestMapping(path = "/accessDenied")
-    public void accessDenied() {
-    }
-
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public Map<String, String[]> handleValidationException(MethodArgumentNotValidException ex) {
+    public ResponseEntity<Map<String, String[]>> handleValidationException(MethodArgumentNotValidException ex) {
         Map<String, String[]> errors = new HashMap<>();
         ex.getBindingResult().getAllErrors().forEach(err -> {
             String fieldName = ((FieldError) err).getField();
@@ -84,13 +80,12 @@ public class UsersController {
             errors.merge(fieldName, errorMessages,
                     (strArr1, strArr2) -> Stream.of(strArr1, strArr2).flatMap(Arrays::stream).toArray(String[]::new));
         });
-        return errors;
+        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler
-    public String handleGeneralException(Exception ex) {
-        return ex.getMessage();
+    public ResponseEntity<String> handleGeneralException(Exception ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 }
