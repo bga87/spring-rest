@@ -3,7 +3,6 @@ package com.jm.task.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -34,11 +33,9 @@ import java.util.Set;
 @Entity
 @Table(uniqueConstraints = {
         @UniqueConstraint(
-                columnNames = {"name", "surname", "age", "job_id"}
-                ),
+                columnNames = {"name", "surname", "age", "job_id"}),
         @UniqueConstraint(
-                columnNames = {"email"}
-                )
+                columnNames = {"email"})
 })
 public class User implements UserDetails {
 

@@ -2,15 +2,12 @@ package com.jm.task.dao;
 
 
 import com.jm.task.domain.Job;
-import com.jm.task.domain.Role;
 import com.jm.task.domain.User;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 
 @Repository
@@ -26,7 +23,6 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public User save(User user) throws IllegalStateException {
-//        setJobToNullIfJobNameIsEmpty(user);
         // проверяем, что user'а с такими данными в базе нет
         if (isAlreadyInDatabase(user)) {
             throw new IllegalStateException("User " + user + " has already been saved to database before");
@@ -69,7 +65,6 @@ public class UserDaoImpl implements UserDao {
     public void update(Long idToUpdate, User modifiedUser) throws IllegalStateException {
         User userToUpdate = userRepo.findWithFetchedJobById(idToUpdate)
                 .orElseThrow(() -> new RuntimeException("User with id '" + idToUpdate + "' doesn't exist"));
-//        setJobToNullIfJobNameIsEmpty(modifiedUser);
         // Если изменненый user идентичен соответствующему ему из БД,
         // то дальнейшее выполнение метода не имеет смысла
         if (userToUpdate.equals(modifiedUser)) {
@@ -126,14 +121,6 @@ public class UserDaoImpl implements UserDao {
             jobRepo.delete(job);
         }
     }
-
-//    private void setJobToNullIfJobNameIsEmpty(User user) {
-//        user.getJob().ifPresent(job -> {
-//            if (job.getName().isEmpty()) {
-//                user.setJob(null);
-//            }
-//        });
-//    }
 
     private boolean emailsAreDifferent(User userToUpdate, User modifiedUser) {
         return !userToUpdate.getEmail().equals(modifiedUser.getEmail());

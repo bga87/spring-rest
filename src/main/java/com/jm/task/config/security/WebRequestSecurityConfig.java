@@ -31,6 +31,7 @@ public class WebRequestSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
                 .regexMatchers("\\/", "\\/\\?.*", "\\/bootstrap.*", "\\/jquery.*", "\\/js.*", "\\/favicon.*").permitAll()
+                .antMatchers("/users/current").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                 .antMatchers("/user/**").access("hasAuthority('ROLE_USER') and !hasAuthority('ROLE_ADMIN')")
                 .regexMatchers(HttpMethod.GET, "\\/admin\\/users\\/1002\\/*").hasAuthority("ROLE_ADMIN")
                 .regexMatchers("\\/admin\\/users\\/1002\\/*").denyAll()

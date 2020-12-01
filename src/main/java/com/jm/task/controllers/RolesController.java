@@ -1,7 +1,6 @@
 package com.jm.task.controllers;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.jm.task.controllers.converters.RoleDeserializer;
+
 import com.jm.task.dao.RoleRepository;
 import com.jm.task.domain.Role;
 import org.springframework.data.domain.Sort;
@@ -10,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+
 
 @RestController
 @RequestMapping(produces = "application/json")
@@ -25,4 +25,5 @@ public class RolesController {
     public List<Role> getRoles() {
         return roleRepo.findAll(Sort.by("id"));
     }
+
 }

@@ -4,6 +4,7 @@ package com.jm.task.controllers;
 import com.jm.task.domain.User;
 import com.jm.task.services.UsersService;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -56,6 +57,11 @@ public class UsersController {
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void updateUser(@PathVariable("id") Long id, @RequestBody @Valid User user) {
         usersService.update(id, user);
+    }
+
+    @GetMapping("/users/current")
+    public User getCurrentUser(Authentication authentication) {
+        return usersService.getUser(((User) authentication.getPrincipal()).getId());
     }
 
     @DeleteMapping("/admin/users/{id}")

@@ -1,5 +1,6 @@
 package com.jm.task.controllers.converters;
 
+
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
@@ -8,6 +9,7 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.jm.task.domain.Job;
 
 import java.io.IOException;
+
 
 public class JobDeserializer extends StdDeserializer<Job> {
 
@@ -26,4 +28,5 @@ public class JobDeserializer extends StdDeserializer<Job> {
         return new Job(jobName, salary.isBlank() ? null : Integer.valueOf(salary)
         );
     }
+
 }

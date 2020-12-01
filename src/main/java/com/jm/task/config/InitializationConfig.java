@@ -1,5 +1,6 @@
 package com.jm.task.config;
 
+
 import com.jm.task.dao.RoleRepository;
 import com.jm.task.domain.Job;
 import com.jm.task.domain.Role;
@@ -15,6 +16,7 @@ import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 
 @Configuration
 public class InitializationConfig {

@@ -1,7 +1,6 @@
 package com.jm.task.domain;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.jm.task.controllers.converters.JobDeserializer;
 
@@ -11,7 +10,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
-import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotNull;
 import java.util.Objects;
 
@@ -39,12 +37,6 @@ public class Job {
         this.name = name;
         this.salary = salary;
     }
-
-//    @JsonIgnore
-//    @AssertTrue(message="Salary is required for employed user")
-//    public boolean isSalaryValid() {
-//        return name.isEmpty() || salary != null;
-//    }
 
     public Long getId() {
         return id;
